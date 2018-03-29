@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
+  div{
+    border:1px solid #000;
+    background:#fff;
+  }
+  .layer1{
+    margin:5px;
+    display:flex;
+    justify-content:space-around;
+    padding:10px;
+  }
+  .layer2{
+    margin:5px;
+    display:flex;
+    justify-content:space-around;
+    padding:10px;
+  }
+  .layer3{
+    display:flex;
+    justify-content:space-around;
+    margin:5px;
+    padding:10px;
+  }
+  .something{
+    display:flex;
+    flex-flow:row wrap;
+    justify-content:space-around;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    margin:auto;
+    width:95%;
+    height:280px;
+  }
+ .select{
+   background:#b0e11e;
+ }
+ .dv-act{
+    margin:5px;
+ }
+</style>
+</head>
+<body>
+  <div class="something">1
+    <div class="food layer1">食物
+      <div class="apple layer2">苹果
+        <div class="redapple layer3">红苹果</div>
+        <div class="greenapple layer3">青苹果</div>
+      </div>
+      <div class="apple layer2">苹果
+        <div class="redapple layer3">红苹果</div>
+        <div class="greenapple layer3">青苹果</div>
+      </div>
+      <div class="apple layer2">苹果
+        <div class="redapple layer3">红苹果</div>
+        <div class="greenapple layer3">青苹果</div>
+      </div>
+      <div class="banana layer2">香蕉</div>
+    </div>
+    <div class="traffic layer1">交通
+      <div class="bike layer2">自行车</div>
+      <div class="car layer2">轿车</div>
+    </div>
+    <div class="book layer1">书</div>
+  </div>
+  <form action="">
+    <input type="button" value="前序遍历" id="btn-before">
+    <input type="button" value="后序遍历" id="btn-behind">
+    <input type="text" id="search-value">
+    <input type="button" id="btn-search" value="搜  索">
+    <input type="text" id="add-text">
+    <input type="button" id="btn-delete" value="删  除">
+    <input type="button" id="btn-add" value="增  加">
+  </form>
+<script>
+  var before=document.getElementById('btn-before');
+  var behind=document.getElementById('btn-behind');
+  var something=document.querySelector(".something");
+  var aRank=[];
+  var bRank=[];
+  var previous;
+  var dvact;
+  var boole=false;
+  function initialize(){
+    clearClass("select");
+    for(var j=0;j<bRank.length;j++){
+      bRank[j].style.background="#fff";
+    }
+    aRank=[];
+    bRank=[];
+    if(previous){
+      previous.style.background="#fff";
+    }
+  }
+  function showColor(){
+    for(var i=0;i<aRank.length;i++){
+      setTimeout(function(i){
+        return function(){
+          if(i==aRank.length-1){
+            boole=false;
+          }
+          if(previous){
+            previous.style.background="#FFF";
+          }
+          aRank[i].style.background="#b0e11e";
+          previous=aRank[i];
+        }
+      }(i),i*500);
+    }
+  }
+  function befoerg(node){
+    aRank.push(node);
+    for(var i=0;i<node.childElementCount;i++){
+      if(node.children[i]!=null){
+        befoerg(node.children[i]);
+      }
+    }
+  }
+  function behierg(node){
+      for(var i=0;i<node.childElementCount;i++){
+        if(node.children[i]!=null){
+          behierg(node.children[i]);
+        }
+      }
+    aRank.push(node);
+  }
+  function btnBefo(){
+    var btnBefore=document.querySelector("#btn-before");
+    btnBefore.onclick=function(e){
+      e.preventDefault();
+      if(!boole){
+        boole=true;
+        initialize();
+        befoerg(something);
+        showColor();
+      }
+    }
+  }
+
+  function btnBehi(){
+    var btnBehind=document.querySelector("#btn-behind");
+    btnBehind.onclick=function(e){
+      e.preventDefault();
+      if(!boole){
+        initialize();
+        behierg(something);
+        showColor();
+      }
+    }
+  }
+
+  function search(){
+    var search=document.getElementById('btn-search');
+    search.onclick=function(e){
+      e.preventDefault();
+      if(!boole){
+        boole=true;
+        initialize();
+        befoerg(something);
+        timeR();
+      }
+    }
+  }
+  function timeR(){
+    var i=0;
+    var list=aRank[i];
+    if(document.getElementById('search-value').value==""){
+      alert("请输入查询内容");
+      boole=false;
+    }else{
+      var timer=setInterval(function(){
+        if(i<aRank.length){
+          aRank[i].style.background="#b0e11e";
+          if(i!=0){
+            aRank[i-1].style.background="#fff";
+          }
+          i++;
+        }else{
+          aRank[i-1].style.background="#fff";
+          searchTo();
+          boole=false;
+          clearInterval(timer);
+        }
+      },100);
+    }
+  }
+  function searchTo(){
+    for(var i=0;i<aRank.length;i++){
+      var text=aRank[i].childNodes[0];
+      if(text.nodeType=='3'&&text!=null&&text.nodeValue.indexOf(document.getElementById('search-value').value)>-1){
+        bRank.push(aRank[i]);
+        aRank[i].style.background="#b0e11e";
+        previous=aRank[i];
+      }
+    }
+    if(bRank.length<1){
+      alert("没有找到该物");
+    }
+  }
+  function dvAct(){
+    befoerg(something);
+    dvact=Array.prototype.slice.call(aRank);//将类数组转化为数组
+    dvact.forEach(function(e){
+      e.onclick=function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        initialize();
+        addClass(this,'select');
+      }
+    })
+  }
+  // 绑定删除按钮
+  function btnDelete(){
+    var btndelete=document.getElementById('btn-delete');
+    btndelete.onclick=function(e){
+      e.preventDefault();
+      dvact.forEach(function(e){
+        if(e.className.indexOf("select")!==-1){
+          e.remove(this);
+        }
+      })
+      dvAct();
+    }
+  }
+  function btnAdd(){
+    var btnadd=document.getElementById('btn-add');
+    btnadd.onclick=function(e){
+      e.preventDefault();
+      var newdiv=document.createElement('div');
+      var addVal=document.getElementById('add-text').value;
+      var newdivText=document.createTextNode(addVal);
+      newdiv.appendChild(newdivText);
+      newdiv.setAttribute("class","dv-act");
+      dvact.forEach(function(e){
+        if(e.className.indexOf('select')!==-1){
+          e.appendChild(newdiv);
+        }
+      });
+      dvAct();
+    }
+  }
+  function addClass(element,value){
+    if(!element) return false;
+    if(!element.className){
+      element.className=value;
+    }else{
+      var tempName=element.className;
+      tempName+=' ';
+      tempName+=value;
+      element.className=tempName;
+    }
+  }
+  function removeClass(element,value){
+    if(element.className.indexOf(value)!==-1){
+      var tempName=element.className;
+      tempName=tempName.replace(value,'');
+      element.className=tempName;
+    }
+  }
+  function clearClass(vall){
+    dvact.forEach(function(e){
+      removeClass(e,vall);
+    });
+  }
+  window.onload=function(){
+    btnBefo();
+    btnBehi();
+    search();
+    dvAct();
+    btnDelete();
+    btnAdd();
+  }
+</script>
+</body>
+</html>
